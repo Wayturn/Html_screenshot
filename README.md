@@ -12,8 +12,6 @@
 
 ```powershell
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-```
 
 2. 安裝套件
 
@@ -31,7 +29,7 @@ python screenshot.py "https://example.com" --output example.png
 
 批次模式（以 txt 檔提供多行 URL 或相對路徑）
 
-1. 在專案資料夾建立 `urls.txt`（每行一個網址或相對路徑，例如 `archive/123/page.html`）
+1. 在專案資料夾建立 `urls.txt`（每行一個欲截圖網址，例如 `https://www.google.com/`）
 
 2. 執行批次截圖：
 
@@ -39,30 +37,49 @@ python screenshot.py "https://example.com" --output example.png
 python screenshot.py --input urls.txt --outdir output --prefix http://localhost:8000 --start 1 --end 40
 ```
 
-執行後會在 `output/` 資料夾內產生 `photo_1.png`、`photo_2.png` ... 按順序對應 `urls.txt` 的行數。
+簡化執行（PowerShell wrapper）
 
-注意事項
-- 若 PowerShell 以預設政策禁止執行腳本，請使用 `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned`（需以管理員或同意提示）或參考公司政策。
-- Playwright 需要下載瀏覽器二進位檔，請確保能連網。若無法下載，請考慮使用已安裝的瀏覽器或 Selenium 等替代方案。
-- 若頁面有長輪詢或無限網路請求，使用 `--wait-state load` 或加長 `--timeout`（例如 `--timeout 60000`）。
-- 若需要在截圖前等特定元素出現，我可以幫你加入 `--wait-for-selector` 參數。
-
-上傳到 GitHub（本機步驟）
-
-1. 初始化本機 git（只需做一次）
+專案提供 `run_screenshots.ps1`，可直接在專案根目錄執行並使用預設參數：
 
 ```powershell
-git init
-git add .
-git commit -m "Initial commit: screenshot tool"
+.\run_screenshots.ps1
 ```
 
-2. 新增遠端並 push（請先在 GitHub 建一個空的 repo，然後替換下面的 URL）
+你也可以覆寫參數，例如只跑第 1 筆：
 
 ```powershell
-git remote add origin https://github.com/<your-username>/<your-repo>.git
-git branch -M main
-git push -u origin main
+```markdown
+# Screenshot Tool
+
+簡單使用指令（PowerShell）
+
+1) 建立並啟用虛擬環境、安裝依賴：
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python -m playwright install
 ```
 
-注意：我不會自動幫你 push 到遠端；若你要我自動上傳，需要提供 repo 與授權資訊。
+2) 單張截圖：
+
+```powershell
+python screenshot.py "https://example.com" --output example.png
+```
+
+3) 批次截圖（使用範例 `urls.txt`，輸出到 `output/`）：
+
+```powershell
+.\run_screenshots.ps1
+```
+
+4) 如要指定 user-agent 或範圍：
+
+```powershell
+.\run_screenshots.ps1 -UserAgent "<UA-string>" -Start 1 -End 40 -OutDir output
+```
+
+授權：[MIT](LICENSE)
+```
+python -m playwright install

@@ -13,23 +13,40 @@ async def capture_page(page, url: str, output_path: Path, wait_state: str = "loa
     start = time.time()
     await page.goto(url, timeout=timeout)
     print(f"page.goto done in {int((time.time()-start)*1000)}ms")
+    # small pause to allow dynamic JS to start (helps sites that detect headless)
+    try:
+        await page.wait_for_timeout(1500)
+    except Exception:
+        pass
     print(f"Waiting for load state: {wait_state}")
     await page.wait_for_load_state(wait_state, timeout=timeout)
     print(f"Taking screenshot -> {output_path}")
     await page.screenshot(path=str(output_path), full_page=True)
 
 
-async def run_single(url: str, output: str, wait_state: str, timeout: int, headless: bool):
+async def run_single(url: str, output: str, wait_state: str, timeout: int, headless: bool, user_agent: str = None):
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=headless)
-        context = await browser.new_context()
+        context_kwargs = {}
+        if user_agent:
+            context_kwargs['user_agent'] = user_agent
+        context = await browser.new_context(**context_kwargs)
         page = await context.new_page()
         await capture_page(page, url, Path(output), wait_state=wait_state, timeout=timeout)
         await browser.close()
 
 
-async def run_batch(input_file: Path, prefix: str, out_dir: Path, start_idx: int = 1, end_idx: int = None, wait_state: str = "load", timeout: int = 30000, headless: bool = True):
-    lines = [l.rstrip('\n') for l in input_file.read_text(encoding='utf-8').splitlines() if l.strip()]
+async def run_batch(input_file: Path, prefix: str, out_dir: Path, start_idx: int = 1, end_idx: int = None, wait_state: str = "load", timeout: int = 30000, headless: bool = True, user_agent: str = None):
+    raw = input_file.read_text(encoding='utf-8').splitlines()
+    # filter out empty lines and lines starting with '#'
+    lines = []
+    for l in raw:
+        s = l.strip()
+        if not s:
+            continue
+        if s.startswith('#'):
+            continue
+        lines.append(s)
     if end_idx is None:
         end_idx = len(lines)
 
@@ -37,7 +54,10 @@ async def run_batch(input_file: Path, prefix: str, out_dir: Path, start_idx: int
 
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=headless)
-        context = await browser.new_context()
+        context_kwargs = {}
+        if user_agent:
+            context_kwargs['user_agent'] = user_agent
+        context = await browser.new_context(**context_kwargs)
         page = await context.new_page()
 
         i = start_idx
@@ -73,6 +93,7 @@ def build_parser():
     p.add_argument("--wait-state", choices=["load", "domcontentloaded", "networkidle"], default="load")
     p.add_argument("--timeout", type=int, default=30000)
     p.add_argument("--no-headless", dest="headless", action="store_false")
+    p.add_argument("--user-agent", default=None, help="Optional user agent string to use for the browser context")
     return p
 
 
