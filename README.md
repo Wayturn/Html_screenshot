@@ -53,13 +53,10 @@ python screenshot.py --input urls.txt --outdir output --prefix http://localhost:
 
 簡單使用指令（PowerShell）
 
-1) 建立並啟用虛擬環境、安裝依賴：
+1) 安裝指令：
 
 ```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-python -m playwright install
+.\install.ps1
 ```
 
 2) 單張截圖：
