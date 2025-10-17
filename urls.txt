@@ -3,3 +3,4 @@ https://tw.yahoo.com/
 # Instructions:
 # - Lines starting with http:// or https:// are used as-is.
 # - Other lines are treated as relative paths and will be prefixed with the value passed to --prefix (default: http://localhost:8000)
+# - 首兩行為預設連結(google首頁和奇摩首頁)，使用者可自行修改為欲截圖網址
