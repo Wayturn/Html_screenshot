@@ -1,0 +1,11 @@
+/.venv/
+output/
+*.png
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+env/
+.env
+*.egg-info/
+.vscode/
