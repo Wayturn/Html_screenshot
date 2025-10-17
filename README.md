@@ -69,4 +69,3 @@ python screenshot.py "https://example.com" --output example.png
 作者：Wayturn
 
 如果你對本工具有改進建議、發現 bug 或想要我協助推到你的 GitHub 倉庫，請聯絡 Wayturn（p19970115@gmail.com）。
-```
